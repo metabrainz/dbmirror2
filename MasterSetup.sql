@@ -1,0 +1,179 @@
+-- Copyright (C) 2021 MetaBrainz Foundation
+-- Licensed under the GPL version 2, or (at your option) any later version:
+-- http://www.gnu.org/licenses/gpl-2.0.txt
+
+BEGIN;
+
+SET search_path = dbmirror2, public;
+
+-- The column_info view allows us to determine whether a column in a given
+-- table is part of its primary key, and gives us its position too.
+--
+-- This view must be refreshed after every schema change; an event trigger
+-- is created in SuperuserMasterSetup.sql to handle this automatically.
+CREATE MATERIALIZED VIEW dbmirror2.column_info (
+    table_schema,
+    table_name,
+    column_name,
+    position,
+    is_primary
+) AS
+    SELECT
+        c.table_schema,
+        c.table_name,
+        c.column_name,
+        c.ordinal_position,
+        coalesce((
+            SELECT TRUE
+            FROM information_schema.key_column_usage kcu
+            NATURAL JOIN information_schema.table_constraints tc
+            WHERE kcu.table_schema = c.table_schema
+            AND kcu.table_name = c.table_name
+            AND kcu.column_name = c.column_name
+            AND tc.constraint_type = 'PRIMARY KEY'
+        ), FALSE) AS is_primary
+    FROM information_schema.columns c
+    NATURAL JOIN information_schema.tables t
+    WHERE t.table_type = 'BASE TABLE'
+    AND t.table_schema NOT IN ('dbmirror2', 'information_schema', 'pg_catalog')
+WITH DATA;
+
+CREATE INDEX column_info_idx
+    ON dbmirror2.column_info (table_schema, table_name, is_primary);
+
+CREATE FUNCTION dbmirror2.refresh_column_info()
+RETURNS event_trigger AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW dbmirror2.column_info;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE FUNCTION dbmirror2.recordchange()
+RETURNS trigger AS $$
+DECLARE
+    tablename   TEXT;
+    keys        TEXT[];
+    jsonquery   TEXT;
+    olddata     JSON;
+    newdata     JSON;
+    -- prefixed with 'x' to avoid conflict with column name in queries
+    xoldctid    TID;
+    xnewctid    TID;
+    nextseqid   BIGINT;
+    -- out-of-order seqid
+    oooseqid    BIGINT;
+    pdrecord    RECORD;
+BEGIN
+    tablename := (
+        quote_ident(TG_TABLE_SCHEMA) || '.' || quote_ident(TG_TABLE_NAME)
+    );
+
+    nextseqid := nextval(
+        pg_get_serial_sequence('dbmirror2.pending_data', 'seqid')
+    );
+
+    INSERT INTO dbmirror2.pending_keys (tablename, keys)
+    VALUES (
+        tablename,
+        (
+            SELECT array_agg(column_name)
+            FROM dbmirror2.column_info
+            WHERE table_schema = TG_TABLE_SCHEMA
+            AND table_name = TG_TABLE_NAME
+            AND is_primary = TRUE
+        )
+    )
+    ON CONFLICT DO NOTHING;
+
+    INSERT INTO dbmirror2.pending_xid_timestamp (xid, ts)
+    VALUES (txid_current(), transaction_timestamp())
+    ON CONFLICT DO NOTHING;
+
+    jsonquery := (
+        SELECT format(
+            'SELECT json_build_object(%1$s)',
+            array_to_string(
+                array_agg(
+                    format('%1$L, ($1).%1$I', column_name) ORDER BY position
+                ),
+                ', '
+            )
+        )
+        FROM dbmirror2.column_info
+        WHERE table_schema = TG_TABLE_SCHEMA AND table_name = TG_TABLE_NAME
+    );
+
+    xoldctid := (CASE TG_OP WHEN 'INSERT' THEN NULL ELSE OLD.ctid END);
+    xnewctid := (CASE TG_OP WHEN 'DELETE' THEN NULL ELSE NEW.ctid END);
+
+    IF TG_OP != 'INSERT' THEN
+        EXECUTE jsonquery INTO olddata USING OLD;
+    END IF;
+
+    IF TG_OP != 'DELETE' THEN
+        EXECUTE jsonquery INTO newdata USING NEW;
+
+        -- Detect out-of-order operations caused by cascading triggers.
+        --
+        -- When row-level AFTER triggers are cascaded, the innermost trigger
+        -- runs first. This means we may potentially see an UPDATE or DELETE
+        -- of a row version that hasn't been added yet.
+        --
+        -- We detect this by storing OLD.ctid and NEW.ctid for every
+        -- operation. (The ctid is a tuple describing the physical location
+        -- of the row version. We only need this to be stable for the
+        -- lifetime of the current transaction.) We then check if there's a
+        -- previous operation whose OLD ctid equals our NEW ctid; these are
+        -- then known to be out-of-order. This previous operation's seqid is
+        -- assigned to `oooseqid` ("out-of-order seqid").
+        --
+        -- The order is fixed by shifting the sequence IDs from the current
+        -- transaction until they're corrected. The current-last operation
+        -- assumes `nextseqid`, the second-to-last assumes the seqid of the 
+        -- last, and so on until `oooseqid` is unused. We then insert our new
+        -- operation with `oooseqid`.
+        --
+        -- Since we're never modifying `pending_data` rows inserted by other
+        -- transactions, this shifting should be safe.
+        SELECT seqid INTO oooseqid
+        FROM dbmirror2.pending_data
+        WHERE xid = txid_current()
+        AND oldctid = xnewctid;
+
+        IF FOUND THEN
+            FOR pdrecord IN (
+                SELECT seqid
+                FROM dbmirror2.pending_data
+                WHERE xid = txid_current()
+                AND seqid >= oooseqid
+                ORDER BY seqid DESC
+            ) LOOP
+                UPDATE dbmirror2.pending_data
+                SET seqid = nextseqid
+                WHERE seqid = pdrecord.seqid;
+
+                nextseqid := pdrecord.seqid;
+            END LOOP;
+
+            ASSERT (nextseqid = oooseqid);
+        END IF;
+    END IF;
+
+    INSERT INTO dbmirror2.pending_data
+        (seqid, tablename, op, xid, olddata, newdata, oldctid, newctid)
+    VALUES (
+        nextseqid,
+        tablename,
+        lower(left(TG_OP, 1)),
+        txid_current(),
+        olddata,
+        newdata,
+        xoldctid,
+        xnewctid
+    );
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+COMMIT;

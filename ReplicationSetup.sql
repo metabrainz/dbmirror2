@@ -50,4 +50,7 @@ ALTER TABLE dbmirror2.pending_data
 CREATE INDEX pending_data_idx_xid_seqid
     ON dbmirror2.pending_data (xid, seqid);
 
+CREATE INDEX pending_data_idx_oldctid_xid
+    ON dbmirror2.pending_data (oldctid, xid);
+
 COMMIT;

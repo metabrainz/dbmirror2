@@ -62,6 +62,7 @@ DECLARE
     nextseqid   BIGINT;
     -- out-of-order seqid
     oooseqid    BIGINT;
+    oootrgdepth INTEGER;
     pdrecord    RECORD;
 BEGIN
     tablename := (
@@ -135,12 +136,20 @@ BEGIN
         --
         -- Since we're never modifying `pending_data` rows inserted by other
         -- transactions, this shifting should be safe.
-        SELECT seqid INTO oooseqid
+        SELECT seqid, trgdepth INTO oooseqid, oootrgdepth
         FROM dbmirror2.pending_data
         WHERE xid = txid_current()
         AND oldctid = xnewctid;
 
         IF FOUND THEN
+            IF oootrgdepth <= pg_trigger_depth() THEN
+                -- This should never happen! Cascading triggers are the only
+                -- known way for operations to arrive out of order. This
+                -- warning must be investigated if it's ever logged.
+                RAISE WARNING 'oootrgdepth (%) <= pg_trigger_depth() (%) (% ON %, OLD: %, NEW: %)',
+                    oootrgdepth, pg_trigger_depth(), TG_OP, tablename, OLD, NEW;
+            END IF;
+
             FOR pdrecord IN (
                 SELECT seqid
                 FROM dbmirror2.pending_data
@@ -160,7 +169,7 @@ BEGIN
     END IF;
 
     INSERT INTO dbmirror2.pending_data
-        (seqid, tablename, op, xid, olddata, newdata, oldctid, newctid)
+        (seqid, tablename, op, xid, olddata, newdata, oldctid, newctid, trgdepth)
     VALUES (
         nextseqid,
         tablename,
@@ -169,7 +178,8 @@ BEGIN
         olddata,
         newdata,
         xoldctid,
-        xnewctid
+        xnewctid,
+        pg_trigger_depth()
     );
 
     RETURN NULL;

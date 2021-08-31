@@ -40,7 +40,8 @@ CREATE TABLE dbmirror2.pending_data (
     olddata     JSON CONSTRAINT olddata_is_null_for_inserts CHECK ((olddata IS NULL) = (op = 'i')),
     newdata     JSON CONSTRAINT newdata_is_null_for_deletes CHECK ((newdata IS NULL) = (op = 'd')),
     oldctid     TID,
-    newctid     TID
+    newctid     TID,
+    trgdepth    INTEGER NOT NULL
 );
 
 ALTER TABLE dbmirror2.pending_data

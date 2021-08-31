@@ -11,11 +11,11 @@ psql -f ReplicationSetup.sql $DB musicbrainz
 psql -f MasterSetup.sql $DB musicbrainz
 psql -f SuperuserMasterSetup.sql $DB "$SUPERUSER"
 
-for test in t/*; do
+for test in test/*; do
     psql -f "$test/schema.sql" $DB musicbrainz
 done
 
-for test in t/*; do
+for test in test/*; do
     psql -f "$test/setup.sql" $DB musicbrainz
     psql -P pager=off -x -c 'SELECT * FROM dbmirror2.pending_data ORDER BY seqid' $DB musicbrainz
     ./DBMirror.pl --database $DB --username musicbrainz
@@ -24,4 +24,4 @@ for test in t/*; do
     psql -c 'TRUNCATE dbmirror2.pending_xid_timestamp' $DB musicbrainz
 done
 
-pg_prove --dbname $DB --username=musicbrainz t/*/test.sql
+pg_prove --dbname $DB --username=musicbrainz test/*/test.sql

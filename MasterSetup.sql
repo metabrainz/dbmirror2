@@ -63,7 +63,13 @@ DECLARE
     -- out-of-order seqid
     oooseqid    BIGINT;
     oootrgdepth INTEGER;
-    pdrecord    RECORD;
+    pdcursor    NO SCROLL CURSOR (oooseqid INTEGER) FOR
+                    SELECT seqid
+                    FROM dbmirror2.pending_data
+                    WHERE xid = txid_current()
+                    AND seqid >= oooseqid
+                    ORDER BY seqid DESC
+                    FOR UPDATE;
 BEGIN
     tablename := (
         quote_ident(TG_TABLE_SCHEMA) || '.' || quote_ident(TG_TABLE_NAME)
@@ -150,16 +156,10 @@ BEGIN
                     oootrgdepth, pg_trigger_depth(), TG_OP, tablename, OLD, NEW;
             END IF;
 
-            FOR pdrecord IN (
-                SELECT seqid
-                FROM dbmirror2.pending_data
-                WHERE xid = txid_current()
-                AND seqid >= oooseqid
-                ORDER BY seqid DESC
-            ) LOOP
+            FOR pdrecord IN pdcursor (oooseqid := oooseqid) LOOP
                 UPDATE dbmirror2.pending_data
                 SET seqid = nextseqid
-                WHERE seqid = pdrecord.seqid;
+                WHERE CURRENT OF pdcursor;
 
                 nextseqid := pdrecord.seqid;
             END LOOP;

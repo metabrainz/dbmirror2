@@ -58,7 +58,6 @@ DECLARE
     newdata     JSON;
     -- prefixed with 'x' to avoid conflict with column name in queries
     xoldctid    TID;
-    xnewctid    TID;
     nextseqid   BIGINT;
     -- out-of-order seqid
     oooseqid    BIGINT;
@@ -110,11 +109,10 @@ BEGIN
         WHERE table_schema = TG_TABLE_SCHEMA AND table_name = TG_TABLE_NAME
     );
 
-    xoldctid := (CASE TG_OP WHEN 'INSERT' THEN NULL ELSE OLD.ctid END);
-    xnewctid := (CASE TG_OP WHEN 'DELETE' THEN NULL ELSE NEW.ctid END);
-
     IF TG_OP != 'INSERT' THEN
         EXECUTE jsonquery INTO olddata USING OLD;
+
+        xoldctid := OLD.ctid;
     END IF;
 
     IF TG_OP != 'DELETE' THEN
@@ -145,7 +143,7 @@ BEGIN
         SELECT seqid, trgdepth INTO oooseqid, oootrgdepth
         FROM dbmirror2.pending_data
         WHERE xid = txid_current()
-        AND oldctid = xnewctid;
+        AND oldctid = NEW.ctid;
 
         IF FOUND THEN
             IF oootrgdepth <= pg_trigger_depth() THEN

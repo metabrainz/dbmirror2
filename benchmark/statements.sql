@@ -34,14 +34,15 @@ COMMIT;
 BEGIN;
 
 UPDATE foo.foo SET id = id + 10;
-UPDATE foo.foo SET bar = NULL WHERE bar = 2;
+UPDATE foo.bar SET id = id + 10;
+UPDATE foo.foo SET bar = NULL WHERE bar = 12;
 
 COMMIT;
 
 BEGIN;
 
-DELETE FROM foo.foo WHERE bar = 1;
-DELETE FROM foo.foo WHERE bar = 2;
+DELETE FROM foo.foo WHERE bar = 11;
+DELETE FROM foo.foo WHERE bar = 12;
 DELETE FROM foo.foo WHERE bar IS NULL;
 DELETE FROM foo.bar;
 

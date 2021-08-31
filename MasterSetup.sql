@@ -126,13 +126,13 @@ BEGIN
         -- runs first. This means we may potentially see an UPDATE or DELETE
         -- of a row version that hasn't been added yet.
         --
-        -- We detect this by storing OLD.ctid and NEW.ctid for every
-        -- operation. (The ctid is a tuple describing the physical location
-        -- of the row version. We only need this to be stable for the
-        -- lifetime of the current transaction.) We then check if there's a
-        -- previous operation whose OLD ctid equals our NEW ctid; these are
-        -- then known to be out-of-order. This previous operation's seqid is
-        -- assigned to `oooseqid` ("out-of-order seqid").
+        -- We detect this by storing OLD.ctid for every operation. (The ctid
+        -- is a tuple describing the physical location of the row version. We
+        -- only need this to be stable for the lifetime of the current
+        -- transaction.) We then check if there's a previous operation whose
+        -- OLD ctid equals our NEW ctid; these are then known to be out-of-
+        -- order. This previous operation's seqid is assigned to `oooseqid`
+        -- ("out-of-order seqid").
         --
         -- The order is fixed by shifting the sequence IDs from the current
         -- transaction until they're corrected. The current-last operation
@@ -169,7 +169,7 @@ BEGIN
     END IF;
 
     INSERT INTO dbmirror2.pending_data
-        (seqid, tablename, op, xid, olddata, newdata, oldctid, newctid, trgdepth)
+        (seqid, tablename, op, xid, olddata, newdata, oldctid, trgdepth)
     VALUES (
         nextseqid,
         tablename,
@@ -178,7 +178,6 @@ BEGIN
         olddata,
         newdata,
         xoldctid,
-        xnewctid,
         pg_trigger_depth()
     );
 

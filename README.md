@@ -8,3 +8,5 @@ dbmirror is the foundation for MusicBrainz's [Live Data Feed](https://wiki.music
  * It stores the entire row in all cases.  For updates, both the old and new versions of the row are stored.  The old dbmirror is inconsistent about what data is stored depending on whether a 'verbose' parameter is passed in, and doesn't store the old row for updates.
 
 dbmirror2 makes it easier for projects to ingest and work with replication packets.  In musicbrainz-server, such projects include our JSON dumps and sitemaps code, but we can also envision a way to re-architecture projects like sir, which currently rely on a large number of triggers pushing changes to rabbitmq.  Instead, imagine sir simply looping over a mirror of the `dbmirror2.pending_data` table -- no additional database-wide triggers needed.
+
+For setup information, see [INSTALL.md](INSTALL.md).

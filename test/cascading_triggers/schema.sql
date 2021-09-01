@@ -29,6 +29,9 @@ CREATE UNIQUE INDEX artist_alias_idx_primary ON artist_alias (artist, locale)
 CREATE OR REPLACE FUNCTION unique_primary_artist_alias()
 RETURNS trigger AS $$
 BEGIN
+    -- Add a visual indicator of each trigger invocation.
+    NEW.name = NEW.name || 'X';
+
     IF NEW.primary_for_locale THEN
       UPDATE musicbrainz.artist_alias SET primary_for_locale = FALSE
       WHERE locale = NEW.locale AND id != NEW.id

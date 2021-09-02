@@ -18,7 +18,7 @@ psql -q -f ../musicbrainz-server/admin/sql/ReplicationSetup.sql old_dbmirror_tes
 psql -q -c 'CREATE SCHEMA dbmirror2 AUTHORIZATION musicbrainz' new_dbmirror_test "$SUPERUSER"
 psql -q -f ReplicationSetup.sql new_dbmirror_test musicbrainz
 psql -q -f MasterSetup.sql new_dbmirror_test musicbrainz
-psql -q -f SuperuserMasterSetup.sql new_dbmirror_test "$SUPERUSER"
+psql -q -f MasterEventTriggerSetup.sql new_dbmirror_test "$SUPERUSER"
 
 psql -q -f benchmark/schema.sql old_dbmirror_test musicbrainz
 psql -q -f benchmark/schema.sql new_dbmirror_test musicbrainz

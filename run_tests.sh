@@ -9,7 +9,7 @@ psql -c 'CREATE EXTENSION pgtap' $DB "$SUPERUSER"
 psql -c 'CREATE SCHEMA dbmirror2 AUTHORIZATION musicbrainz' $DB "$SUPERUSER"
 psql -f ReplicationSetup.sql $DB musicbrainz
 psql -f MasterSetup.sql $DB musicbrainz
-psql -f SuperuserMasterSetup.sql $DB "$SUPERUSER"
+psql -f MasterEventTriggerSetup.sql $DB "$SUPERUSER"
 
 for test in test/*; do
     psql -f "$test/schema.sql" $DB musicbrainz

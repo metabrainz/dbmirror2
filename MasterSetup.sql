@@ -10,7 +10,7 @@ SET search_path = dbmirror2, public;
 -- table is part of its primary key, and gives us its position too.
 --
 -- This view must be refreshed after every schema change; an event trigger
--- is created in SuperuserMasterSetup.sql to handle this automatically.
+-- in MasterEventTriggerSetup.sql can handle this automatically.
 CREATE MATERIALIZED VIEW dbmirror2.column_info (
     table_schema,
     table_name,
@@ -40,13 +40,6 @@ WITH DATA;
 
 CREATE INDEX column_info_idx
     ON dbmirror2.column_info (table_schema, table_name, is_primary);
-
-CREATE FUNCTION dbmirror2.refresh_column_info()
-RETURNS event_trigger AS $$
-BEGIN
-    REFRESH MATERIALIZED VIEW dbmirror2.column_info;
-END;
-$$ LANGUAGE plpgsql;
 
 CREATE FUNCTION dbmirror2.recordchange()
 RETURNS trigger AS $$

@@ -14,6 +14,6 @@ psql -c "CREATE SCHEMA dbmirror2 AUTHORIZATION $PGUSER" $DB $PGSUPERUSER
 psql -f ReplicationSetup.sql $DB $PGUSER
 psql -f MasterSetup.sql $DB $PGUSER
 
-# Creates an EVENT TRIGGER, which must be done as a superuser.
-psql -f SuperuserMasterSetup.sql $DB $PGSUPERUSER
+# Optional. Creates an EVENT TRIGGER, which must be done as a superuser.
+psql -f MasterEventTriggerSetup.sql $DB $PGSUPERUSER
 ```

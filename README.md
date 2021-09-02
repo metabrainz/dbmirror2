@@ -10,3 +10,25 @@ dbmirror is the foundation for MusicBrainz's [Live Data Feed](https://wiki.music
 dbmirror2 makes it easier for projects to ingest and work with replication packets.  In musicbrainz-server, such projects include our JSON dumps and sitemaps code, but we can also envision a way to re-architecture projects like sir, which currently rely on a large number of triggers pushing changes to rabbitmq.  Instead, imagine sir simply looping over a mirror of the `dbmirror2.pending_data` table -- no additional database-wide triggers needed.
 
 For setup information, see [INSTALL.md](INSTALL.md).
+
+## Benchmark
+
+The performance difference has been observed to be negligible compared to pending.c:
+
+```
+$ lscpu | grep -F Model
+Model name:                      AMD Ryzen 5 2600 Six-Core Processor
+Model:                           8
+$ ./benchmark/run_benchmark.sh
+Old (dbmirror):
+
+real    0m1.806s
+user    0m3.362s
+sys     0m2.841s
+
+New (dbmirror2):
+
+real    0m1.928s
+user    0m3.315s
+sys     0m2.907s
+```

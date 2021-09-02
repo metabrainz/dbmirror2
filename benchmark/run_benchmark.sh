@@ -31,13 +31,13 @@ trigger_sql+='FOR EACH ROW EXECUTE PROCEDURE'
 psql -q -c "$trigger_sql public.recordchange('verbose');" old_dbmirror_test musicbrainz
 psql -q -c "$trigger_sql dbmirror2.recordchange();" new_dbmirror_test musicbrainz
 
-echo 'Old:'
+echo 'Old (dbmirror):'
 time {
     seq 0 100 49900 | parallel psql -q -v id_start={} -f benchmark/statements.sql old_dbmirror_test musicbrainz
 }
 
 echo
-echo 'New:'
+echo 'New (dbmirror2):'
 time {
     seq 0 100 49900 | parallel psql -q -v id_start={} -f benchmark/statements.sql new_dbmirror_test musicbrainz
 }

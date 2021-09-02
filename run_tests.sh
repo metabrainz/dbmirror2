@@ -21,7 +21,7 @@ for test in test/*; do
     ./DBMirror.pl --database $DB --username musicbrainz
     psql -c 'TRUNCATE dbmirror2.pending_data' $DB musicbrainz
     psql -c 'TRUNCATE dbmirror2.pending_keys' $DB musicbrainz
-    psql -c 'TRUNCATE dbmirror2.pending_xid_timestamp' $DB musicbrainz
+    psql -c 'TRUNCATE dbmirror2.pending_ts' $DB musicbrainz
 done
 
 pg_prove --dbname $DB --username=musicbrainz test/*/test.sql

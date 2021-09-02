@@ -91,7 +91,7 @@ BEGIN
     )
     ON CONFLICT DO NOTHING;
 
-    INSERT INTO dbmirror2.pending_xid_timestamp (xid, ts)
+    INSERT INTO dbmirror2.pending_ts (xid, ts)
     VALUES (txid_current(), transaction_timestamp())
     ON CONFLICT DO NOTHING;
 

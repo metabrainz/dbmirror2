@@ -19,13 +19,13 @@ ALTER TABLE dbmirror2.pending_keys
     ADD CONSTRAINT pending_keys_pkey
     PRIMARY KEY (tablename);
 
-CREATE TABLE dbmirror2.pending_xid_timestamp (
+CREATE TABLE dbmirror2.pending_ts (
     xid BIGINT,
     ts TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-ALTER TABLE dbmirror2.pending_xid_timestamp
-    ADD CONSTRAINT pending_xid_timestamp_pkey
+ALTER TABLE dbmirror2.pending_ts
+    ADD CONSTRAINT pending_ts_pkey
     PRIMARY KEY (xid);
 
 CREATE TABLE dbmirror2.pending_data (

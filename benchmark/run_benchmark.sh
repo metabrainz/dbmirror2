@@ -33,15 +33,11 @@ psql -q -c "$trigger_sql dbmirror2.recordchange();" new_dbmirror_test musicbrain
 
 echo 'Old:'
 time {
-    for i in {0..500}; do
-        psql -q -f benchmark/statements.sql old_dbmirror_test musicbrainz
-    done
+    seq 0 100 49900 | parallel psql -q -v id_start={} -f benchmark/statements.sql old_dbmirror_test musicbrainz
 }
 
 echo
 echo 'New:'
 time {
-    for i in {0..500}; do
-        psql -q -f benchmark/statements.sql new_dbmirror_test musicbrainz
-    done
+    seq 0 100 49900 | parallel psql -q -v id_start={} -f benchmark/statements.sql new_dbmirror_test musicbrainz
 }

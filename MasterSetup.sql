@@ -146,7 +146,7 @@ BEGIN
         AND oldctid = NEW.ctid;
 
         IF FOUND THEN
-            IF oootrgdepth <= pg_trigger_depth() THEN
+            IF oootrgdepth IS NOT NULL AND oootrgdepth <= pg_trigger_depth() THEN
                 -- This should never happen! Cascading triggers are the only
                 -- known way for operations to arrive out of order. This
                 -- warning must be investigated if it's ever logged.

@@ -14,7 +14,7 @@ set -e
 
 psql -q -c 'CREATE FUNCTION recordchange() RETURNS trigger AS '\''$libdir/pending'\'', '\''recordchange'\'' LANGUAGE C' old_dbmirror_test "$SUPERUSER"
 psql -q -c 'CREATE SCHEMA musicbrainz AUTHORIZATION musicbrainz' old_dbmirror_test "$SUPERUSER"
-psql -q -f ../musicbrainz-server/admin/sql/ReplicationSetup.sql old_dbmirror_test musicbrainz
+psql -q -f benchmark/OldReplicationSetup.sql old_dbmirror_test musicbrainz
 psql -q -c 'CREATE SCHEMA dbmirror2 AUTHORIZATION musicbrainz' new_dbmirror_test "$SUPERUSER"
 psql -q -f ReplicationSetup.sql new_dbmirror_test musicbrainz
 psql -q -f MasterSetup.sql new_dbmirror_test musicbrainz

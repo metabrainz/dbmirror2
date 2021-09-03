@@ -30,7 +30,7 @@ ALTER TABLE dbmirror2.pending_ts
 
 CREATE TABLE dbmirror2.pending_data (
     seqid       BIGSERIAL,
-    tablename   TEXT NOT NULL,
+    tablename   TEXT NOT NULL CONSTRAINT tablename_exists CHECK (to_regclass(tablename) IS NOT NULL),
     op          "char" NOT NULL CONSTRAINT op_in_diu CHECK (op IN ('d', 'i', 'u')),
     xid         BIGINT NOT NULL,
                 -- We use JSON over JSONB because there is no need to perform

@@ -127,7 +127,7 @@ BEGIN
         --
         -- The order is fixed by shifting the sequence IDs from the current
         -- transaction until they're corrected. The current-last operation
-        -- assumes `nextseqid`, the second-to-last assumes the seqid of the 
+        -- assumes `nextseqid`, the second-to-last assumes the seqid of the
         -- last, and so on until `oooseqid` is unused. We then insert our new
         -- operation with `oooseqid`.
         --

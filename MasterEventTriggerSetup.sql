@@ -7,8 +7,6 @@
 
 BEGIN;
 
-SET search_path = dbmirror2, public;
-
 CREATE FUNCTION dbmirror2.refresh_column_info()
 RETURNS event_trigger AS $$
 BEGIN

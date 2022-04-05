@@ -4,8 +4,6 @@
 
 BEGIN;
 
-SET search_path = dbmirror2, public;
-
 -- The column_info view allows us to determine whether a column in a given
 -- table is part of its primary key, and gives us its position too.
 --

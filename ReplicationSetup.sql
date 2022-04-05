@@ -4,8 +4,6 @@
 
 BEGIN;
 
-SET search_path = dbmirror2, public;
-
 -- The pending_keys tables serves two purposes:
 --  1. Stores the primary keys associated with each table.
 --  2. Allows quickly checking if a particular table has changed

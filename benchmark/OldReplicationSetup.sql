@@ -4,9 +4,9 @@ SET search_path = musicbrainz;
 
 BEGIN;
 
-CREATE AGGREGATE array_cat_agg(anyarray)(
+CREATE AGGREGATE array_cat_agg(int2[]) (
     sfunc       = array_cat,
-    stype       = anyarray,
+    stype       = int2[],
     initcond    = '{}'
 );
 

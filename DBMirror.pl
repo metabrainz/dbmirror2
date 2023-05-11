@@ -59,7 +59,14 @@ my $sth_cursor = $dbh->prepare('FETCH 100 FROM csr1');
 my $sth_pending = $dbh->prepare(q{
     SELECT pd.seqid, pd.tablename, pd.op, pd.olddata, pd.newdata, pk.keys
       FROM dbmirror2.pending_data pd
-      JOIN dbmirror2.pending_keys pk ON pk.tablename = pd.tablename
+      JOIN (
+              SELECT table_schema, table_name,
+                     array_agg(column_name)::TEXT[] AS keys
+                FROM dbmirror2.column_info
+               WHERE is_primary = TRUE
+            GROUP BY table_schema, table_name
+        ) pk ON parse_ident(pd.tablename) =
+                    ARRAY[pk.table_schema, pk.table_name]::TEXT[]
      WHERE pd.xid = ?
      ORDER BY pd.seqid ASC
 });

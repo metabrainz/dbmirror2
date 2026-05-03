@@ -1,0 +1,33 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-common ca-certificates
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y \
+            libdbd-pg-perl \
+            libdbi-perl \
+            libtap-parser-sourcehandler-pgtap-perl \
+            postgresql-18 \
+            postgresql-18-pgtap
+
+      - name: Set up PostgreSQL
+        run: |
+          sudo -u postgres pg_dropcluster 16 main
+          sudo -u postgres pg_createcluster 18 main
+          echo 'local all all trust' | sudo tee /etc/postgresql/18/main/pg_hba.conf >/dev/null
+          sudo -u postgres pg_ctlcluster 18 main start
+          sudo -u postgres pg_isready
+          sudo -u postgres psql -U postgres -d template1 -c 'CREATE ROLE musicbrainz WITH LOGIN;'
+
+      - name: Run tests
+        run: ./run_tests.sh

@@ -46,9 +46,6 @@ DECLARE
     -- pending_data.tablename and pending_keys.tablename
     _tablename  TEXT;
     keys        TEXT[];
-    jsonquery   TEXT;
-    olddata     JSON;
-    newdata     JSON;
     -- prefixed with 'x' to avoid conflict with column name in queries
     xoldctid    TID;
     nextseqid   BIGINT;
@@ -75,29 +72,11 @@ BEGIN
     VALUES (txid_current(), transaction_timestamp())
     ON CONFLICT DO NOTHING;
 
-    jsonquery := (
-        SELECT format(
-            'SELECT json_build_object(%1$s)',
-            array_to_string(
-                array_agg(
-                    format('%1$L, ($1).%1$I', column_name) ORDER BY position
-                ),
-                ', '
-            )
-        )
-        FROM dbmirror2.column_info
-        WHERE table_schema = TG_TABLE_SCHEMA AND table_name = TG_TABLE_NAME
-    );
-
     IF TG_OP != 'INSERT' THEN
-        EXECUTE jsonquery INTO olddata USING OLD;
-
         xoldctid := OLD.ctid;
     END IF;
 
     IF TG_OP != 'DELETE' THEN
-        EXECUTE jsonquery INTO newdata USING NEW;
-
         -- Detect out-of-order operations caused by cascading triggers.
         --
         -- When row-level AFTER triggers are cascaded, the innermost trigger
@@ -154,8 +133,8 @@ BEGIN
         _tablename,
         lower(left(TG_OP, 1)),
         txid_current(),
-        olddata,
-        newdata,
+        row_to_json(OLD),
+        row_to_json(NEW),
         xoldctid,
         pg_trigger_depth()
     );

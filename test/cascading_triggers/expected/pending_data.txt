@@ -1,77 +1,77 @@
--[ RECORD 1 ]---------------------------------------------------------------------------------------------
+-[ RECORD 1 ]-------------------------------------------------------------------------------
 seqid    | 1
 op       | u
 xid      | 1
-olddata  | {"id" : 1, "artist" : 20, "name" : "CHACK", "locale" : "ja", "primary_for_locale" : true}
-newdata  | {"id" : 1, "artist" : 10, "name" : "CHACKX", "locale" : "ja", "primary_for_locale" : true}
+olddata  | {"id":1,"artist":20,"name":"CHACK","locale":"ja","primary_for_locale":true}
+newdata  | {"id":1,"artist":10,"name":"CHACKX","locale":"ja","primary_for_locale":true}
 trgdepth | 1
--[ RECORD 2 ]---------------------------------------------------------------------------------------------
+-[ RECORD 2 ]-------------------------------------------------------------------------------
 seqid    | 2
 op       | u
 xid      | 1
-olddata  | {"id" : 1, "artist" : 10, "name" : "CHACKX", "locale" : "ja", "primary_for_locale" : true}
-newdata  | {"id" : 1, "artist" : 10, "name" : "CHACKXX", "locale" : "ja", "primary_for_locale" : false}
+olddata  | {"id":1,"artist":10,"name":"CHACKX","locale":"ja","primary_for_locale":true}
+newdata  | {"id":1,"artist":10,"name":"CHACKXX","locale":"ja","primary_for_locale":false}
 trgdepth | 2
--[ RECORD 3 ]---------------------------------------------------------------------------------------------
+-[ RECORD 3 ]-------------------------------------------------------------------------------
 seqid    | 3
 op       | u
 xid      | 1
-olddata  | {"id" : 1, "artist" : 10, "name" : "CHACKXX", "locale" : "ja", "primary_for_locale" : false}
-newdata  | {"id" : 1, "artist" : 10, "name" : "CHACKXXX", "locale" : "ja", "primary_for_locale" : false}
+olddata  | {"id":1,"artist":10,"name":"CHACKXX","locale":"ja","primary_for_locale":false}
+newdata  | {"id":1,"artist":10,"name":"CHACKXXX","locale":"ja","primary_for_locale":false}
 trgdepth | 2
--[ RECORD 4 ]---------------------------------------------------------------------------------------------
+-[ RECORD 4 ]-------------------------------------------------------------------------------
 seqid    | 4
 op       | u
 xid      | 1
-olddata  | {"id" : 2, "artist" : 30, "name" : "栄喜", "locale" : "ja", "primary_for_locale" : true}
-newdata  | {"id" : 2, "artist" : 10, "name" : "栄喜X", "locale" : "ja", "primary_for_locale" : true}
+olddata  | {"id":2,"artist":30,"name":"栄喜","locale":"ja","primary_for_locale":true}
+newdata  | {"id":2,"artist":10,"name":"栄喜X","locale":"ja","primary_for_locale":true}
 trgdepth | 1
--[ RECORD 5 ]---------------------------------------------------------------------------------------------
+-[ RECORD 5 ]-------------------------------------------------------------------------------
 seqid    | 5
 op       | u
 xid      | 1
-olddata  | {"id" : 2, "artist" : 10, "name" : "栄喜X", "locale" : "ja", "primary_for_locale" : true}
-newdata  | {"id" : 2, "artist" : 10, "name" : "栄喜XX", "locale" : "ja", "primary_for_locale" : false}
+olddata  | {"id":2,"artist":10,"name":"栄喜X","locale":"ja","primary_for_locale":true}
+newdata  | {"id":2,"artist":10,"name":"栄喜XX","locale":"ja","primary_for_locale":false}
 trgdepth | 2
--[ RECORD 6 ]---------------------------------------------------------------------------------------------
+-[ RECORD 6 ]-------------------------------------------------------------------------------
 seqid    | 6
 op       | u
 xid      | 1
-olddata  | {"id" : 3, "artist" : 40, "name" : "test", "locale" : "ja", "primary_for_locale" : true}
-newdata  | {"id" : 3, "artist" : 10, "name" : "testX", "locale" : "ja", "primary_for_locale" : true}
+olddata  | {"id":3,"artist":40,"name":"test","locale":"ja","primary_for_locale":true}
+newdata  | {"id":3,"artist":10,"name":"testX","locale":"ja","primary_for_locale":true}
 trgdepth | 1
--[ RECORD 7 ]---------------------------------------------------------------------------------------------
+-[ RECORD 7 ]-------------------------------------------------------------------------------
 seqid    | 7
 op       | i
 xid      | 2
 olddata  | 
-newdata  | {"id" : 4, "artist" : 20, "name" : "DELETEMEX", "locale" : "ja", "primary_for_locale" : false}
+newdata  | {"id":4,"artist":20,"name":"DELETEMEX","locale":"ja","primary_for_locale":false}
 trgdepth | 1
--[ RECORD 8 ]---------------------------------------------------------------------------------------------
+-[ RECORD 8 ]-------------------------------------------------------------------------------
 seqid    | 8
 op       | d
 xid      | 2
-olddata  | {"id" : 4, "artist" : 20, "name" : "DELETEMEX", "locale" : "ja", "primary_for_locale" : false}
+olddata  | {"id":4,"artist":20,"name":"DELETEMEX","locale":"ja","primary_for_locale":false}
 newdata  | 
 trgdepth | 2
--[ RECORD 9 ]---------------------------------------------------------------------------------------------
+-[ RECORD 9 ]-------------------------------------------------------------------------------
 seqid    | 9
 op       | i
 xid      | 4
 olddata  | 
-newdata  | {"id" : 4, "artist" : 20, "name" : "DELETEMEX", "locale" : "ja", "primary_for_locale" : false}
+newdata  | {"id":4,"artist":20,"name":"DELETEMEX","locale":"ja","primary_for_locale":false}
 trgdepth | 1
--[ RECORD 10 ]--------------------------------------------------------------------------------------------
+-[ RECORD 10 ]------------------------------------------------------------------------------
 seqid    | 10
 op       | u
 xid      | 6
-olddata  | {"id" : 4, "artist" : 20, "name" : "DELETEMEX", "locale" : "ja", "primary_for_locale" : false}
-newdata  | {"id" : 5, "artist" : 20, "name" : "DELETEMEXX", "locale" : "ja", "primary_for_locale" : false}
+olddata  | {"id":4,"artist":20,"name":"DELETEMEX","locale":"ja","primary_for_locale":false}
+newdata  | {"id":5,"artist":20,"name":"DELETEMEXX","locale":"ja","primary_for_locale":false}
 trgdepth | 1
--[ RECORD 11 ]--------------------------------------------------------------------------------------------
+-[ RECORD 11 ]------------------------------------------------------------------------------
 seqid    | 11
 op       | d
 xid      | 6
-olddata  | {"id" : 5, "artist" : 20, "name" : "DELETEMEXX", "locale" : "ja", "primary_for_locale" : false}
+olddata  | {"id":5,"artist":20,"name":"DELETEMEXX","locale":"ja","primary_for_locale":false}
 newdata  | 
 trgdepth | 2

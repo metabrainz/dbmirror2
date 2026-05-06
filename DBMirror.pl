@@ -39,7 +39,7 @@ sub get_columns_and_values {
 
     my @values = map {
         my $value = $data->{$_};
-        ref($value) ? $json->encode($value) : $value;
+        ref($value) eq 'HASH' ? $json->encode($value) : $value;
     } @columns;
 
     return (\@columns, \@values);

@@ -8,6 +8,8 @@ dropdb --username="$SUPERUSER" $DB 2> /dev/null
 createdb --username="$SUPERUSER" --owner musicbrainz $DB
 psql -c 'CREATE SCHEMA musicbrainz;' $DB musicbrainz
 psql -c 'ALTER DATABASE dbmirror2_test SET search_path TO musicbrainz, public' $DB "$SUPERUSER"
+psql -c 'ALTER DATABASE dbmirror2_test SET timezone TO '\''UTC'\''' $DB "$SUPERUSER"
+psql -c 'CREATE EXTENSION cube' $DB musicbrainz
 psql -c 'CREATE EXTENSION pgtap' $DB "$SUPERUSER"
 psql -c 'CREATE SCHEMA dbmirror2 AUTHORIZATION musicbrainz' $DB "$SUPERUSER"
 psql -f ReplicationSetup.sql $DB musicbrainz

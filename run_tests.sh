@@ -13,7 +13,7 @@ psql -c 'CREATE EXTENSION cube' $DB musicbrainz
 psql -c 'CREATE EXTENSION pgtap' $DB "$SUPERUSER"
 psql -c 'CREATE SCHEMA dbmirror2 AUTHORIZATION musicbrainz' $DB "$SUPERUSER"
 psql -f ReplicationSetup.sql $DB musicbrainz
-psql -f MasterSetup.sql $DB musicbrainz
+psql -f dbmirror2.sql $DB musicbrainz
 
 for test in test/*; do
     psql -f "$test/schema.sql" $DB musicbrainz

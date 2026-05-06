@@ -4,41 +4,6 @@
 
 BEGIN;
 
--- The column_info view allows us to determine whether a column in a given
--- table is part of its primary key, and gives us its position too.
---
--- This view must be refreshed after every schema change; an event trigger
--- in MasterEventTriggerSetup.sql can handle this automatically.
-CREATE MATERIALIZED VIEW dbmirror2.column_info (
-    table_schema,
-    table_name,
-    column_name,
-    position,
-    is_primary
-) AS
-    SELECT
-        c.table_schema,
-        c.table_name,
-        c.column_name,
-        c.ordinal_position,
-        coalesce((
-            SELECT TRUE
-            FROM information_schema.key_column_usage kcu
-            NATURAL JOIN information_schema.table_constraints tc
-            WHERE kcu.table_schema = c.table_schema
-            AND kcu.table_name = c.table_name
-            AND kcu.column_name = c.column_name
-            AND tc.constraint_type = 'PRIMARY KEY'
-        ), FALSE) AS is_primary
-    FROM information_schema.columns c
-    NATURAL JOIN information_schema.tables t
-    WHERE t.table_type = 'BASE TABLE'
-    AND t.table_schema NOT IN ('dbmirror2', 'information_schema', 'pg_catalog')
-WITH DATA;
-
-CREATE INDEX column_info_idx
-    ON dbmirror2.column_info (table_schema, table_name, is_primary);
-
 CREATE FUNCTION dbmirror2.recordchange()
 RETURNS trigger AS $$
 DECLARE

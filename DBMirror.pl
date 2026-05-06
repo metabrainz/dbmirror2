@@ -60,11 +60,18 @@ my $sth_pending = $dbh->prepare(q{
     SELECT pd.seqid, pd.tablename, pd.op, pd.olddata, pd.newdata, pk.keys
       FROM dbmirror2.pending_data pd
       JOIN (
-              SELECT table_schema, table_name,
-                     array_agg(column_name)::TEXT[] AS keys
-                FROM dbmirror2.column_info
-               WHERE is_primary = TRUE
-            GROUP BY table_schema, table_name
+              SELECT kcu.table_schema,
+                     kcu.table_name,
+                     array_agg(kcu.column_name ORDER BY kcu.ordinal_position)::text[] AS keys
+                FROM information_schema.table_constraints tc
+                JOIN information_schema.key_column_usage kcu ON (
+                         tc.constraint_name = kcu.constraint_name
+                         AND tc.table_schema = kcu.table_schema
+                         AND tc.table_name = kcu.table_name
+                     )
+               WHERE tc.constraint_type = 'PRIMARY KEY'
+                 AND kcu.table_schema NOT IN ('dbmirror2', 'information_schema', 'pg_catalog')
+            GROUP BY kcu.table_schema, kcu.table_name
         ) pk ON parse_ident(pd.tablename) =
                     ARRAY[pk.table_schema, pk.table_name]::TEXT[]
      WHERE pd.xid = ?

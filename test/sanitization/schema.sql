@@ -1,7 +1,3 @@
-CREATE schema musicbrainz;
-
-SET search_path = musicbrainz;
-
 CREATE TABLE editor (id INTEGER, name TEXT, password TEXT);
 ALTER TABLE editor ADD CONSTRAINT editor_pkey PRIMARY KEY (id);
 

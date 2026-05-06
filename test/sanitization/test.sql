@@ -1,7 +1,5 @@
 BEGIN;
 
-SET search_path = musicbrainz, public;
-
 SELECT plan(3);
 
 SELECT is((SELECT password FROM editor WHERE id = 1), NULL);

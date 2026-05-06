@@ -1,7 +1,3 @@
-CREATE SCHEMA musicbrainz;
-
-SET search_path = musicbrainz, public;
-
 CREATE TABLE artist (
     id SERIAL
 );

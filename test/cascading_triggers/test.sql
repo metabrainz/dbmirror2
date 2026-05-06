@@ -1,7 +1,5 @@
 BEGIN;
 
-SET search_path = musicbrainz, public;
-
 SELECT plan(12);
 
 SELECT is((SELECT artist FROM artist_alias WHERE id = 1), 10);

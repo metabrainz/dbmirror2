@@ -11,6 +11,5 @@ PGSUPERUSER=postgres
 
 psql -c "CREATE SCHEMA dbmirror2 AUTHORIZATION $PGUSER" $DB $PGSUPERUSER
 
-psql -f ReplicationSetup.sql $DB $PGUSER
 psql -f dbmirror2.sql $DB $PGUSER
 ```

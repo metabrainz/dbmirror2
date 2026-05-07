@@ -1,0 +1,14 @@
+-[ RECORD 1 ]-----------------------------------
+seqid    | 1
+op       | d
+xid      | 1
+olddata  | {"id":2,"name":"bar","password":null}
+newdata  | 
+trgdepth | 1
+-[ RECORD 2 ]-----------------------------------
+seqid    | 2
+op       | i
+xid      | 2
+olddata  | 
+newdata  | {"id":3,"name":"baz","password":null}
+trgdepth | 1

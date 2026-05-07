@@ -1,5 +1,3 @@
-SET search_path = musicbrainz;
-
 INSERT INTO editor
 VALUES (1, 'foo', NULL), (2, 'bar', NULL);
 

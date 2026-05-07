@@ -22,13 +22,13 @@ Model:                           8
 $ ./benchmark/run_benchmark.sh
 Old (dbmirror):
 
-real    0m1.806s
-user    0m3.362s
-sys     0m2.841s
+real    0m2.393s
+user    0m2.564s
+sys     0m4.723s
 
 New (dbmirror2):
 
-real    0m1.928s
-user    0m3.315s
-sys     0m2.907s
+real    0m2.248s
+user    0m2.437s
+sys     0m4.401s
 ```

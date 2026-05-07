@@ -1,5 +1,3 @@
-SET search_path = musicbrainz, public;
-
 INSERT INTO artist (id) VALUES (10), (20), (30), (40);
 
 INSERT INTO artist_alias (artist, id, locale, name, primary_for_locale)

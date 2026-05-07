@@ -16,9 +16,7 @@ psql -q -c 'CREATE FUNCTION recordchange() RETURNS trigger AS '\''$libdir/pendin
 psql -q -c 'CREATE SCHEMA musicbrainz AUTHORIZATION musicbrainz' old_dbmirror_test "$SUPERUSER"
 psql -q -f benchmark/OldReplicationSetup.sql old_dbmirror_test musicbrainz
 psql -q -c 'CREATE SCHEMA dbmirror2 AUTHORIZATION musicbrainz' new_dbmirror_test "$SUPERUSER"
-psql -q -f ReplicationSetup.sql new_dbmirror_test musicbrainz
-psql -q -f MasterSetup.sql new_dbmirror_test musicbrainz
-psql -q -f MasterEventTriggerSetup.sql new_dbmirror_test "$SUPERUSER"
+psql -q -f dbmirror2.sql new_dbmirror_test musicbrainz
 
 psql -q -f benchmark/schema.sql old_dbmirror_test musicbrainz
 psql -q -f benchmark/schema.sql new_dbmirror_test musicbrainz

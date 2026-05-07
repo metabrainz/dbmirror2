@@ -165,4 +165,4 @@ the time it happens.
 
 This issue became the motivation for writing dbmirror2. It tackles these
 problems by detecting out-of-order operations, and reordering them as they
-occur; see MasterSetup.sql for the implementation.
+occur; see dbmirror2.sql for the implementation.
